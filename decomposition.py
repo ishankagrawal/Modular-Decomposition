@@ -168,7 +168,7 @@ def decompose(v,X,G,Partition,cur,i,main):
 		for vertex in cu.P:
 			res.append(vertex)
 		cu = cu.next
-	print(res)
+	print("Factoring Permutation ->",res)
 	return "".join(res)
 
 def paranthesize(perm,G):
@@ -223,7 +223,8 @@ def paranthesize(perm,G):
 		while(rc[i]>0):
 			res+=')'
 			rc[i]-=1
-	print(res)
+	#print(res)
+	return res
 
 
 def remove_dummies(perm,G,vl,vr,lc,rc):
@@ -235,7 +236,7 @@ def remove_dummies(perm,G,vl,vr,lc,rc):
 		for j in range(rc[i]):
 			res+=')'
 			
-	print(res)
+	#print(res)
 	stack = []
 	n = len(perm)
 	for i in range(n):
@@ -247,7 +248,7 @@ def remove_dummies(perm,G,vl,vr,lc,rc):
 				left_cutter = min(vl[cur:i])
 				right_cutter = max(vr[cur:i])
 				if((left_cutter>=0 and left_cutter<cur)  or right_cutter>i):
-					print(cur,left_cutter,i,right_cutter)
+					#print(cur,left_cutter,i,right_cutter)
 					lc[cur]-=1
 					rc[i]-=1
 
