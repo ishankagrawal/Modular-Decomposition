@@ -1,5 +1,11 @@
 import networkx as nx
 import sys
+class Node:
+	def __init__(self,quotient=None,label=None,children=None):
+		self.label = label
+		self.children = children
+		self.quotient = quotient
+
 class PartitionNode:
 	def __init__(self,P):
 		self.P = P
@@ -14,6 +20,8 @@ class PartitionList:
 		if(self.head==Prt):
 			self.head = arr[0]
 			arr[-1].next = Prt.next
+			if(Prt.next):
+				Prt.next.prev = arr[-1]
 		else:
 			Prt.prev.next = arr[0]
 			arr[0].prev = Prt.prev
@@ -160,7 +168,7 @@ def decompose(v,X,G,Partition,cur,i,main):
 		if(len(module.P)>1):
 			temp = PartitionNode(module.P)
 			cur = PartitionList(temp)
-			decompose(list(module.P)[-1],temp,G,Partition,cur,it+1,module)
+			decompose(list(module.P)[-1],temp,G,Partition,cur,it,module)
 		module = next_module
 	res = []
 	cu = Partition.head
@@ -169,7 +177,7 @@ def decompose(v,X,G,Partition,cur,i,main):
 			res.append(vertex)
 		cu = cu.next
 	print("Factoring Permutation ->",res)
-	return "".join(res)
+	return res
 
 def paranthesize(perm,G):
 	n = len(perm)
@@ -183,6 +191,7 @@ def paranthesize(perm,G):
 	for i in range(n):
 		perm_map[perm[i]] = i
 		#print(perm[i])
+	#print(perm_map)
 	for i,v in enumerate(perm):
 		for adj in G.adj[v]:
 			#print(v,adj)
@@ -214,14 +223,14 @@ def paranthesize(perm,G):
 	remove_dummies(perm,G,vl,vr,lc,rc)
 	#print(lc)
 	#print(rc)
-	res = ""
+	res = []
 	for i,v in enumerate(perm):
 		while(lc[i]>0):
-			res+='('
+			res.append('(')
 			lc[i]-=1
-		res+=v
+		res.append(v)
 		while(rc[i]>0):
-			res+=')'
+			res.append(')')
 			rc[i]-=1
 	#print(res)
 	return res
@@ -252,11 +261,57 @@ def remove_dummies(perm,G,vl,vr,lc,rc):
 					lc[cur]-=1
 					rc[i]-=1
 
+def perm_to_tree(perm,cur,i):
+	if(i>=len(perm) or perm[i]==')'):
+		return
+	if(perm[i]=='('):
+		if(cur.children):
+			cur.children.append(Node())
+			perm_to_tree(perm,cur.children[-1],i+1)
+		else:
+			cur.children = []
+			cur.children.append(Node())
+			perm_to_tree(perm,cur.children[-1],i+1)
+	else:
+		if(cur.children):
+			cur.children.append(Node(quotient=[perm[i]]))
+		else:
+			cur.children = []
+			cur.children.append(Node(quotient = [perm[i]]))
+
+def label_tree(G,cur):
+	if(cur.children):
+		for node in cur.children:
+			label_tree(G,node)
+		q = []
+		for node in cur.children:
+			q.append(node.quotient[0])
+		Gp = G.subgraph(q)
+		out = 0
+		for v in q:
+			if(Gp.degree[v]==len(q)-1):
+				out+=1
+			elif(Gp.degree[v]==0):
+				out-=1
+		if(out==len(q)):
+			cur.label = 'series'
+		elif(out==-len(q)):
+			cur.label = 'parallel'
+		else:
+			cur.label = 'prime'
+
+
+
 if __name__ == "__main__":	
 	filek = open(sys.argv[1],'r')
 	a,b = decomposer(filek)
 	ans = paranthesize(a,b)
 	print(ans)
+	root = Node()
+	perm_to_tree(ans,root,0)
+	G = readAdjFile(filek)
+	#label_tree(G,root)
+	
 
 
 						
