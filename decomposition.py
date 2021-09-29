@@ -168,7 +168,7 @@ def decompose(v,X,G,Partition,cur,i,main):
 		if(len(module.P)>1):
 			temp = PartitionNode(module.P)
 			cur = PartitionList(temp)
-			decompose(list(module.P)[-1],temp,G,Partition,cur,it+1,module)
+			decompose(list(module.P)[-1],temp,G,Partition,cur,it,module)
 		module = next_module
 	res = []
 	cu = Partition.head
