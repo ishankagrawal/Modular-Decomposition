@@ -141,8 +141,8 @@ def decompose(v,X,G,Partition,cur,i,main):
 						L+=[Ymin,Ymax]
 					else:
 						L.append(Ymin)
-						for (i,y) in enumerate(K):
-							if(y==K[i]):
+						for (i,z) in enumerate(K):
+							if(y==z):
 								K[i] = Ymax
 								break
 						else:
