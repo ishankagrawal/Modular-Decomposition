@@ -454,13 +454,37 @@ def create_tree(adj_file):
     label_tree(b, root, a)
     #print(root.children)
     get_merged_nodes(b, root, a, lmap, rmap)
-    return root
+
+    return ''.join(to_newick(root,[';'],a))
+
+def to_newick(root,res,perm):
+	if(root):
+		if(root.children):
+			if(root.label=='prime'):
+				res.append('*')
+			if(root.label=='series'):
+				res.append('S')
+			if(root.label=='parallel'):
+				res.append('P')
+			res.append(')')
+			for i,child in enumerate(root.children):
+				to_newick(child,res,perm)
+				if(i!=len(root.children)-1):
+					res.append(',')
+			res.append('(')
+		else:
+			res.append(perm[root.fv])
+			
+	return res[::-1]
+
 
 
 
 
 if __name__ == '__main__':
     filek = open(sys.argv[1], 'r')
-    Tree_root = create_tree(filek)
-    print("Tree Created")
+    Tree = create_tree(filek)
+    print("Tree Created:")
+    print(Tree)
+
     #print (root.children)
